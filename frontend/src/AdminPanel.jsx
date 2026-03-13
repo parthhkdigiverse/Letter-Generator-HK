@@ -54,12 +54,12 @@ const AdminPanel = ({ onBack }) => {
         fetchPrompts();
       } else {
           let errorMsg = 'Unknown error';
+          const text = await res.text();
           try {
-              const data = await res.json();
+              const data = JSON.parse(text);
               errorMsg = data.detail || JSON.stringify(data);
           } catch (e) {
-              const text = await res.text();
-              errorMsg = `Server error (${res.status}): ${text.slice(0, 100)}...`;
+              errorMsg = `Server error (${res.status}): ${text.slice(0, 100)}${text.length > 100 ? '...' : ''}`;
           }
           alert('Error: ' + errorMsg);
       }
