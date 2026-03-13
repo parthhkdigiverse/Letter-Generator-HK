@@ -43,19 +43,29 @@ const App = () => {
           description: chats[activeTab].input
         }),
       });
-      const data = await res.json();
-      
-      if (data.error) {
-        alert("Error from backend: " + data.error);
-        return;
+      if (res.ok) {
+          const data = await res.json();
+          if (data.error) {
+            alert("Error from backend: " + data.error);
+            return;
+          }
+          setChats(prev => ({
+            ...prev,
+            [activeTab]: { ...prev[activeTab], output: data.content }
+          }));
+      } else {
+          let errorMsg = 'Unknown error';
+          try {
+              const data = await res.json();
+              errorMsg = data.detail || JSON.stringify(data);
+          } catch (e) {
+              const text = await res.text();
+              errorMsg = `Server error (${res.status}): ${text.slice(0, 100)}...`;
+          }
+          alert("Failed to generate: " + errorMsg);
       }
-
-      setChats(prev => ({
-        ...prev,
-        [activeTab]: { ...prev[activeTab], output: data.content }
-      }));
     } catch (err) {
-      alert("Failed to connect to backend.");
+      alert("Failed to connect to backend: " + err.message);
     } finally {
       setLoading(false);
     }

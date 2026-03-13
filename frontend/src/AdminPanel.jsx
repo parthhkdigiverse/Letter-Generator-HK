@@ -53,11 +53,18 @@ const AdminPanel = ({ onBack }) => {
         setNewPrompt('');
         fetchPrompts();
       } else {
-          const data = await res.json();
-          alert('Error: ' + data.detail);
+          let errorMsg = 'Unknown error';
+          try {
+              const data = await res.json();
+              errorMsg = data.detail || JSON.stringify(data);
+          } catch (e) {
+              const text = await res.text();
+              errorMsg = `Server error (${res.status}): ${text.slice(0, 100)}...`;
+          }
+          alert('Error: ' + errorMsg);
       }
     } catch (err) {
-      alert('Failed to save');
+      alert('Failed to save: ' + err.message);
     } finally {
       setLoading(false);
     }
