@@ -163,7 +163,7 @@ async def generate_letter_route(request: LetterRequest):
         return {"error": "GEMINI_API_KEY environment variable is not set."}
     
     genai.configure(api_key=api_key)
-    api_model = genai.GenerativeModel("gemini-1.5-flash") # Use stable model name
+    api_model = genai.GenerativeModel("gemini-2.5-flash") # Use stable model name
         
     prompt_data = await get_prompt_by_type(request.letter_type)
     system_role = prompt_data["prompt_text"] if prompt_data else "You are a professional business writer."
