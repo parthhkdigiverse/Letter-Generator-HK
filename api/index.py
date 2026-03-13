@@ -4,11 +4,26 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import google.generativeai as genai
 from dotenv import load_dotenv
-from database import (
-    get_all_prompts, get_prompt_by_type, add_or_update_prompt, 
-    delete_prompt, seed_initial_prompts
-)
-from prompts import LETTER_PROMPTS
+import sys
+import traceback
+
+try:
+    from database import (
+        get_all_prompts, get_prompt_by_type, add_or_update_prompt, 
+        delete_prompt, seed_initial_prompts
+    )
+    from prompts import LETTER_PROMPTS
+except ImportError:
+    try:
+        from .database import (
+            get_all_prompts, get_prompt_by_type, add_or_update_prompt, 
+            delete_prompt, seed_initial_prompts
+        )
+        from .prompts import LETTER_PROMPTS
+    except ImportError as e:
+        print(f"IMPORT ERROR: {e}")
+        print(f"Path: {sys.path}")
+        traceback.print_exc()
 
 load_dotenv()
 
@@ -23,6 +38,12 @@ else:
 
 app = FastAPI()
 router = APIRouter(prefix="/api")
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    print(f"GLOBAL ERROR: {exc}")
+    traceback.print_exc()
+    return {"error": "Internal Server Error", "detail": str(exc)}
 
 # Enable CORS
 app.add_middleware(
