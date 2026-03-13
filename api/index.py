@@ -1,29 +1,21 @@
 import os
+import sys
+
+# Ensure the 'api' directory is in the path for imports to work on Vercel
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI, HTTPException, Body, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import google.generativeai as genai
 from dotenv import load_dotenv
-import sys
 import traceback
 
-try:
-    from database import (
-        get_all_prompts, get_prompt_by_type, add_or_update_prompt, 
-        delete_prompt, seed_initial_prompts
-    )
-    from prompts import LETTER_PROMPTS
-except ImportError:
-    try:
-        from .database import (
-            get_all_prompts, get_prompt_by_type, add_or_update_prompt, 
-            delete_prompt, seed_initial_prompts
-        )
-        from .prompts import LETTER_PROMPTS
-    except ImportError as e:
-        print(f"IMPORT ERROR: {e}")
-        print(f"Path: {sys.path}")
-        traceback.print_exc()
+from database import (
+    get_all_prompts, get_prompt_by_type, add_or_update_prompt, 
+    delete_prompt, seed_initial_prompts
+)
+from prompts import LETTER_PROMPTS
 
 load_dotenv()
 
